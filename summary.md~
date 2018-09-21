@@ -33,6 +33,20 @@ Basically, `slot.assign(sequence<Node> nodes)` sets the slot's *manually-assigne
 
 See also the Example 3 later.
 
+
+Note: This change implies:
+
+-   *manually-assigned-nodes* should be considered an implementation detail. As long as the external behavior doesn't change, UA doesn't allocate *manually-assigned-nodes* for a slot.
+-   *manually-assigned-nodes* is used only when a slot is in a shadow tree whose *slotting* is *manual*.
+-   *manually-assigned-nodes* is not used when a slot is in a shadow tree whose *slotting* is *auto*.
+
+    Web developers can call `slot.assign(...)` for such a slot, however, it is a sort of *no-op*, at least until the slot is moved to another shadow tree with 'manual', where *manually-assigned-nodes* might have a meaning (but it is unlikely).
+
+-   If the same node is set to *manually-assigned-nodes* of more than one slots, the first slot in tree-order takes that node. The slot's location in the tree matters, as declarative API does so.
+
+
+[To find a slot]: https://dom.spec.whatwg.org/#find-a-slot
+
 # Examples
 
 ## Example 1: How imperative slotting API works in slotting=manual.
@@ -173,17 +187,7 @@ assert(slot1.assignedNodes() == [a, b]);
 Web developers could use *assign* in stead of specifying slot= attribute for every shadow host's children
 
 Example:
-As the built-in element there is details/summary, developers become to implement this element by themselves.
-
 ```js
-
-class MySummaryElement extends HTMLElement {
-  constructor() {
-    super();
-  }
-}
-customElements.define("my-summary", MySummaryElement);
-
 customElements.define("my-detail", class extends HTMLElement {
   constructor() {
     super();
@@ -215,26 +219,6 @@ customElements.define("my-detail", class extends HTMLElement {
 });
 ```
 
-```html
-<my-details>
-  <div>div</div>
-  <my-summary>summary1</my-summary>
-  <my-summary>summary2</my-summary>
-</my-details>
-```
-
-In the above situation, only the first summary element, will assign slot. 
-Instead of using slot='' attribute like below.
-
-```html
-<my-details>
-  <div slot=slot2>div</div>
-  <my-summary slot=slot1>summary1</my-summary>
-  <my-summary slot=slot2>summary2</my-summary>
-</my-details>
-```
-
- 
 
 # Open Questions
 
