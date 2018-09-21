@@ -25,13 +25,7 @@ a slot has an associated *manually-assigned-nodes* (ordered list). Unless stated
 
 A slot gets new API, called *assign* (tentative name).
 
-Basically, `slot.assign(sequence<Node> nodes)` sets the slot's *manually-assigned-nodes* to *nodes*. See the later section for details.
-
-- *manually-assigned-nodes* is an internal field. It is write-only. Users cannot read the value directly.
-
-- *manually-assigned-nodes* are different than [assigned nodes]. For example, users can pass a node which is not host's children. We don't throw an exception even if such a *invalid* node is passed, however, *invalid* node is never selected as [assigned nodes]; the engine recaluculate [assigned nodes] later, based on *manually-assigned-nodes*. Invalid nodes in *manually-assigned-nodes* are simply ignored. The caculataed [assigned nodes] are only observable.
-
-See also the Example 3 later.
+See also the Example for details.
 
 # Examples
 
@@ -222,27 +216,3 @@ customElements.define("my-detail", class extends HTMLElement {
   <my-summary>summary2</my-summary>
 </my-details>
 ```
-
-In the above situation, only the first summary element, will assign slot. 
-Instead of using slot='' attribute like below.
-
-```html
-<my-details>
-  <div slot=slot2>div</div>
-  <my-summary slot=slot1>summary1</my-summary>
-  <my-summary slot=slot2>summary2</my-summary>
-</my-details>
-```
-
- 
-
-# Open Questions
-
--   Should we reset *manually-assigned-nodes* at some timings? e.g. when a slot is connected / or disconnected.
-
-    The current proposal never resets *manually-assigned-nodes*. This rule is easy to remember.
-    That would cover the most use cases, I think.
-
--   Using `sequence<Node>` would be a right choice in slot.assign, given that the order doesn't matter?
-
-    If WebIDL has a better type, like `Set<Node>`, we should use it.
